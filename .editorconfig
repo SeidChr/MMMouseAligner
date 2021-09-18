@@ -1,0 +1,28 @@
+# Commons
+
+indent_style=space
+indent_size=4
+insert_final_newline=true
+trim_trailing_whitespace=true
+
+[*.cs]
+
+indent_brace_style=Allman
+
+# SA1600: Elements should be documented -> code should only be commented when the complexity is high (which is not desireable)
+dotnet_diagnostic.SA1600.severity=none
+dotnet_diagnostic.SA1601.severity=none
+dotnet_diagnostic.SA1602.severity=none
+dotnet_diagnostic.SA1611.severity=none
+dotnet_diagnostic.SA1615.severity=none
+dotnet_diagnostic.SA1617.severity=none
+dotnet_diagnostic.SA1618.severity=none
+
+# SA1028: trailing whitespace -> does not hurt readability and is usually removed by formatting the code
+dotnet_diagnostic.SA1028.severity=none
+
+# SA1633: File should have header -> file-headers are not strictly required in a non-open-source, company environment
+dotnet_diagnostic.SA1633.severity=none
+
+# IDE0065: Misplaced using directive -> would break stylecop rule
+csharp_using_directive_placement = inside_namespace

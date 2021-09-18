@@ -1,8 +1,8 @@
-using System;
-using Xunit;
-
 namespace MMMouseAligner.Test
 {
+    using MMMouseAligner.Models;
+    using Xunit;
+
     public class HistoryTest
     {
         [Fact]
@@ -46,7 +46,7 @@ namespace MMMouseAligner.Test
         public void SizeLimit()
         {
             var history = new History<int>(3);
-            
+
             history.Enqueue(1);
             history.Enqueue(2);
             history.Enqueue(3);

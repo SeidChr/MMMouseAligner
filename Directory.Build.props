@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
     <langversion>9</langversion>
+    <!--<Nullable>enable</Nullable>-->
+    <!--<WarningsAsErrors>nullable</WarningsAsErrors>-->
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">

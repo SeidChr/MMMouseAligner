@@ -1,14 +1,19 @@
 ﻿namespace MMMouseAligner.Interop
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
 
     public class User32
     {
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Point
+        public static Point CursorPosition
         {
-            public int X;
-            public int Y;
+            get
+            {
+                GetCursorPos(out var point);
+                return point;
+            }
+
+            set => SetCursorPos(value.X, value.Y);
         }
 
         [DllImport("user32.dll")]
@@ -18,15 +23,25 @@
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetCursorPos(out Point point);
 
-        public static Point CursorPosition
+        [StructLayout(LayoutKind.Sequential)]
+        [SuppressMessage("ReSharper", "ConvertToAutoProperty", Justification = "Do not break structural layout.")]
+        public struct Point : IPoint
         {
-            get 
-            { 
-                GetCursorPos(out var point);
-                return point;
+            private int valueX;
+            
+            private int valueY;
+
+            public int X
+            {
+                get => this.valueX;
+                set => this.valueX = value;
             }
 
-            set => SetCursorPos(value.X, value.Y);
+            public int Y
+            {
+                get => this.valueY;
+                set => this.valueY = value;
+            }
         }
     }
 }
