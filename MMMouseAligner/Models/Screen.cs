@@ -1,40 +1,65 @@
 ﻿namespace MMMouseAligner.Models
 {
     using System;
-    using Interop;
 
     public struct Screen
     {
-        public int BorderX;
+        public readonly int BorderX;
 
-        public double Scale;
+        public readonly double Scale;
 
-        public ScreenPosition ScreenPosition;
+        public readonly ScreenPosition ScreenPosition;
 
-        public Screen(int borderX, double scale, ScreenPosition screenPosition)
+        public readonly string Name;
+
+        public Screen(int borderX, double scale, ScreenPosition screenPosition, string name)
         {
             this.BorderX = borderX;
             this.Scale = scale;
             this.ScreenPosition = screenPosition;
+            this.Name = name;
         }
 
-        public IPoint TryApplyCursorPosition<TPoint>(History<IPoint> history, Func<int, int, TPoint> pointFactory)
+        public bool IsLeftScreen
+            => this.ScreenPosition == ScreenPosition.Left;
+
+        public bool IsRightScreen
+            => this.ScreenPosition == ScreenPosition.Right;
+
+        public (TPoint NewPoint, Transition RelativeTransition) GetNewCursorPosition<TPoint>(
+            History<TPoint> history,
+            Func<int, int, TPoint> pointFactory)
             where TPoint : IPoint
         {
-            IPoint result = null;
-            if (this.HasMovedIn(history))
+            var relativeTransition = this.TestMove(history);
+            var result = relativeTransition switch
             {
-                var newY = this.ScaleIn(history[0].Y);
-                result = pointFactory(history[0].X, newY);
-            }
-            else if (this.HasMovedOut(history))
-            {
-                var newY = this.ScaleOut(history[0].Y);
-                result = pointFactory(history[0].X, newY);
-            }
+                Transition.In => pointFactory(history[0].X, this.ScaleIn(history[0].Y)),
+                Transition.Out => pointFactory(history[0].X, this.ScaleOut(history[0].Y)),
+                _ => history[0],
+            };
 
-            return result;
+            return (result, relativeTransition);
         }
+
+        public Transition TestMove<T>(History<T> history)
+            where T : IPoint
+            => this.ScreenPosition switch
+            {
+                ScreenPosition.Left => this.HasMovedLtr(history) 
+                    ? Transition.Out 
+                    : this.HasMovedRtl(history) 
+                        ? Transition.In 
+                        : Transition.None,
+
+                ScreenPosition.Right => this.HasMovedRtl(history)
+                    ? Transition.Out
+                    : this.HasMovedLtr(history)
+                        ? Transition.In
+                        : Transition.None,
+
+                _ => Transition.None,
+            };
 
         public bool HasMovedOut<T>(History<T> history)
             where T : IPoint

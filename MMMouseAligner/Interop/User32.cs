@@ -28,8 +28,14 @@
         public struct Point : IPoint
         {
             private int valueX;
-            
+
             private int valueY;
+
+            public Point(int x, int y) 
+            {
+                this.valueX = x;
+                this.valueY = y;
+            }
 
             public int X
             {
@@ -42,6 +48,9 @@
                 get => this.valueY;
                 set => this.valueY = value;
             }
+
+            public static Point Create(int x, int y)
+                => new Point(x, y);
         }
     }
 }
