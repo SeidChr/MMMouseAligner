@@ -2,7 +2,7 @@
 {
     using System;
 
-    public struct Screen
+    public readonly struct Screen
     {
         public readonly int BorderX;
 
@@ -25,6 +25,15 @@
 
         public bool IsRightScreen
             => this.ScreenPosition == ScreenPosition.Right;
+
+        public bool IsInScreen<TPoint>(TPoint point)
+            where TPoint : IPoint 
+            => this.ScreenPosition switch
+            {
+                ScreenPosition.Left => point.X < this.BorderX,
+                ScreenPosition.Right => point.X > this.BorderX,
+                _ => false,
+            };
 
         public (TPoint NewPoint, Transition RelativeTransition) GetNewCursorPosition<TPoint>(
             History<TPoint> history,
@@ -59,24 +68,6 @@
                         : Transition.None,
 
                 _ => Transition.None,
-            };
-
-        public bool HasMovedOut<T>(History<T> history)
-            where T : IPoint
-            => this.ScreenPosition switch
-            {
-                ScreenPosition.Left => this.HasMovedLtr(history),
-                ScreenPosition.Right => this.HasMovedRtl(history),
-                _ => throw new ArgumentOutOfRangeException(nameof(this.ScreenPosition)),
-            };
-
-        public bool HasMovedIn<T>(History<T> history)
-            where T : IPoint
-            => this.ScreenPosition switch
-            {
-                ScreenPosition.Left => this.HasMovedRtl(history),
-                ScreenPosition.Right => this.HasMovedLtr(history),
-                _ => throw new ArgumentOutOfRangeException(nameof(this.ScreenPosition)),
             };
 
         public int ScaleIn(int oldY)

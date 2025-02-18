@@ -3,7 +3,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
 
-    public class User32
+    public static class User32
     {
         public static Point CursorPosition
         {
@@ -36,7 +36,7 @@
                 this.valueX = x;
                 this.valueY = y;
             }
-
+            
             public int X
             {
                 get => this.valueX;
@@ -49,8 +49,10 @@
                 set => this.valueY = value;
             }
 
-            public static Point Create(int x, int y)
-                => new Point(x, y);
+            public static Point Create(int x, int y) => new(x, y);
+
+            public override readonly string ToString()
+                => $"({this.valueX}, {this.valueY})";
         }
     }
 }

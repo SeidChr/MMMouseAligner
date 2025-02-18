@@ -1,6 +1,19 @@
 ﻿namespace MMMouseAligner.Models
 {
-    public class History<T>
+    /// <summary>
+    /// A fixed size array-like data-structure, which overflows to the
+    /// beginning, and allows indexed access relative to the last added element.
+    ///
+    /// Access to index 0 will always return the last added element.
+    /// Access to index -1 will return the next oldest, and so on.
+    ///
+    /// On retrieving elements, the index will be normalized to always point
+    /// to a field in the existing array, potentially overflowing to the beginning.
+    ///
+    /// Data is held in a fixed size array. 
+    /// </summary>
+    /// <typeparam name="T">Type of history elements.</typeparam>
+    public sealed class History<T>
     {
         private readonly T[] historyArray;
 
