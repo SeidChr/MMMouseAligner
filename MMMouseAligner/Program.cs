@@ -34,6 +34,8 @@ const string neutral = "  ";
 
 history.Enqueue(User32.CursorPosition);
 
+Point LastPoint = User32.CursorPosition;
+
 Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
 
 [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +53,7 @@ inputManager.OnMouseEvent += (code, state, x, y) =>
     var newPosition = User32.Point.Create(x, y);
     ////Console.WriteLine($"RECEIVED {x} {y}");
 
-    var oldScreenIndex = GetMonitorIndex(history[0]);
+    var oldScreenIndex = GetMonitorIndex(LastPoint);
     var newScreenIndex = GetMonitorIndex(newPosition);
     
     if (code == VirtualKeyCode.Invalid && state == KeyState.None && (oldScreenIndex != newScreenIndex))
@@ -70,13 +72,14 @@ void HandlePositionChangeQuick(Point newPoint, int oldScreenIndex, int newScreen
         _ => (int)(newPoint.Y / scaleFactor),
     });
 
-    Console.WriteLine($"[S] {oldScreenIndex}>>{newScreenIndex} (x{history[0].X:+0000;-0000} >> {newPoint.X:+0000;-0000}) ; (y{history[0].Y:+0000;-0000} >> y[{newPoint.Y:+0000;-0000} >> {alteredPoint.Y:+0000;-0000}])");
+    Console.WriteLine($"[S] {oldScreenIndex}>>{newScreenIndex} (x{LastPoint.X:+0000;-0000} >> {newPoint.X:+0000;-0000}) ; (y{LastPoint.Y:+0000;-0000} >> y[{newPoint.Y:+0000;-0000} >> {alteredPoint.Y:+0000;-0000}])");
 
-    history.Enqueue(newPoint);
+    //history.Enqueue(newPoint);
 
+    LastPoint = alteredPoint;
     User32.CursorPosition = alteredPoint;
 
-    history.Enqueue(alteredPoint);
+    //history.Enqueue(alteredPoint);
 }
 
 ////void AlterPosition(Screen screen, User32.Point currentPosition)
