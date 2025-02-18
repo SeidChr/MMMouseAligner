@@ -23,6 +23,8 @@
 
         private int lastAdded = -1;
 
+        private object lockObject = new object();
+
         public History(int maxSize)
         {
             this.size = 0;
@@ -45,6 +47,14 @@
             this.nextAdded %= this.historyArray.Length;
         }
 
+        public void EnqueueTs(T item)
+        {
+            lock (lockObject)
+            {
+                this.Enqueue(item);
+            }
+        }
+
         // Given size = 5 ; items = 1,2,3,4,5 ; index = -12 ; lastAdded = 4
         // 1: reduce the size of the index to be at max + or - size (% size)
         // => index = (-12 % 5) = -2
@@ -56,5 +66,13 @@
         // => index = (7 % 5) = 2
         public T Get(int index = 0)
             => this.historyArray[((index % this.size) + this.size + this.lastAdded) % this.size];
+
+        public T GetTs(int index = 0)
+        {
+            lock (lockObject)
+            {
+                return this.Get(index);
+            }
+        }
     }
 }

@@ -36,12 +36,13 @@ history.Enqueue(User32.CursorPosition);
 
 Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
 
+[MethodImpl(MethodImplOptions.AggressiveInlining)]
 int GetMonitorIndex(Point position)
     => position.X < leftScreenBorder
     ? 0 
-    : position.X > rightScreenBorder
+    : position.X >= rightScreenBorder
         ? 2 
-        : 0;
+        : 1;
 
 inputManager.OnMouseEvent += (code, state, x, y) =>
 {
@@ -63,21 +64,19 @@ inputManager.OnMouseEvent += (code, state, x, y) =>
 [MethodImpl(MethodImplOptions.AggressiveInlining)]
 void HandlePositionChangeQuick(Point newPoint, int oldScreenIndex, int newScreenIndex) 
 {
-    int ScaleIn(int oldY)
-        => (int)(oldY * scaleFactor);
+    var alteredPoint = User32.Point.Create(newPoint.X, newScreenIndex switch
+    {
+        0 or 2 => (int)(newPoint.Y * scaleFactor),
+        _ => (int)(newPoint.Y / scaleFactor),
+    });
 
-    int ScaleOut(int oldY)
-        => (int)(oldY / scaleFactor);
+    Console.WriteLine($"[S] {oldScreenIndex}>>{newScreenIndex} (x{history[0].X:+0000;-0000} >> {newPoint.X:+0000;-0000}) ; (y{history[0].Y:+0000;-0000} >> y[{newPoint.Y:+0000;-0000} >> {alteredPoint.Y:+0000;-0000}])");
 
     history.Enqueue(newPoint);
 
-    var newY = newScreenIndex switch
-    {
-        <= 0 or >= 2 => ScaleIn(newPoint.Y),
-        _ => ScaleOut(newPoint.Y),
-    };
+    User32.CursorPosition = alteredPoint;
 
-    User32.CursorPosition = User32.Point.Create(newPoint.X, newY);
+    history.Enqueue(alteredPoint);
 }
 
 ////void AlterPosition(Screen screen, User32.Point currentPosition)
